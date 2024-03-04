@@ -33,10 +33,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         comments = Comment.objects.filter(post_id=post_id)
         return comments
 
-    def perform_create(self, serializer):
+    def get_post(self):
         post_id = self.kwargs.get('post_id')
-        post = Post.objects.get(pk=post_id)
-        serializer.save(author=self.request.user, post=post)
+        return Post.objects.get(pk=post_id)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, post=self.get_post())
 
 
 class FollowViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
